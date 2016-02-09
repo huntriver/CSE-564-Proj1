@@ -38,12 +38,14 @@
 
     </style>
 </head>
-<body ng-app="">
+<body ng-app="myApp" >
 <button ng-click="chart='barchart'">barchart</button>
 <button ng-click="chart='piechart'">piechart</button>
 <button ng-click="chart='forcechart'">forcechart</button>
 {{chart}}
-<div class="barchart" ng-show="chart=='barchart'">
+<div ng-show="chart=='barchart'" ng-controller="barchartCtrl" >
+    <div><input type="range" min="0" max="10" ng-model="size" ng-init="size=4">{{size}}</div>
+    <div bar-chart size="size"></div>
 </div>
 <div class="piechart" ng-show="chart=='piechart'">
 </div>
