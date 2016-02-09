@@ -6,6 +6,7 @@
     <script type="text/javascript" src="d3/d3.v3.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
     <style>
         .barchart{
             margin-left: 50px;
@@ -15,10 +16,38 @@
             fill: red;
             opacity: 0.6;
         }
+
+        .piechart{
+            margin-left:50px;
+            margin-top: 50px;
+        }
+        .forcechart{
+            margin-left:50px;
+            margin-top: 50px;
+        }
+
+        .forcechart .node {
+            stroke: #fff;
+            stroke-width: 1.5px;
+        }
+
+        .forcechart .link {
+            stroke: #999;
+            stroke-opacity: .6;
+        }
+
     </style>
 </head>
-<body>
-<div class="barchart">
+<body ng-app="">
+<button ng-click="chart='barchart'">barchart</button>
+<button ng-click="chart='piechart'">piechart</button>
+<button ng-click="chart='forcechart'">forcechart</button>
+{{chart}}
+<div class="barchart" ng-show="chart=='barchart'">
+</div>
+<div class="piechart" ng-show="chart=='piechart'">
+</div>
+<div class="forcechart" ng-show="chart=='forcechart'">
 </div>
 <script type="text/javascript" src="myapp.js"></script>
 
