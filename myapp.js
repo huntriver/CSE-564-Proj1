@@ -2,10 +2,6 @@
  * Created by XinheHuang on 2016/2/6.
  */
 var app = angular.module('myApp', []);
-app.controller('barchartCtrl', function ($scope,$templateCache) {
-    $scope.firstName = "John";
-    $scope.lastName = "Doe";
-});
 
 var dataset = [5, 10, 13, 19, 21, 25, 22, 18, 15, 13,
     11, 12, 15, 20, 18, 17, 16, 18, 23, 25];
@@ -13,7 +9,9 @@ app.directive("barChart", function () {
     var link = function (scope, element, attrs) {
         var w = 400;
         var h = 100;
+        d3.csv(scope.data,function(error,data){
 
+        })
         var svg = d3.select(".barchart")
             .append("svg")
             .attr("width", w)
