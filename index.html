@@ -43,9 +43,10 @@
 <button ng-click="chart='piechart'">piechart</button>
 <button ng-click="chart='forcechart'">forcechart</button>
 {{chart}}
-<div ng-show="chart=='barchart'"  >
+<div ng-show="chart=='barchart'"  ng-controller="barchartCtrl">
     <div><input type="range" min="0" max="10" ng-model="size" ng-init="size=4">{{size}}</div>
-    <div bar-chart size="size" data="AirPassengers.csv"></div>
+    <select ng-options="var for var in vars" ng-model="selectedVar" ng-init="selectedVar=vars[0]"></select>
+    <div bar-chart size="size" data="AirPassengers.csv" var="selectedVar"></div>
 </div>
 <div class="piechart" ng-show="chart=='piechart'">
 </div>

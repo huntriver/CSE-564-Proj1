@@ -2,67 +2,76 @@
  * Created by XinheHuang on 2016/2/6.
  */
 var app = angular.module('myApp', []);
-
-var dataset = [5, 10, 13, 19, 21, 25, 22, 18, 15, 13,
-    11, 12, 15, 20, 18, 17, 16, 18, 23, 25];
+app.controller('barchartCtrl',function($scope,$templateCache){
+    $scope.vars=["time","AirPassengers"];
+})
 app.directive("barChart", function () {
     var link = function (scope, element, attrs) {
         var w = 400;
         var h = 100;
-        d3.csv(scope.data,function(error,data){
-
-        })
-        var svg = d3.select(".barchart")
-            .append("svg")
-            .attr("width", w)
-            .attr("height", h);
-
-        var tip = d3.tip()
-            .attr('class', 'tip')
-            .offset([-5, 0])
-            .html(function (d) {
-                return d;
+        var dataset=[];
+        d3.csv(scope.data,function(data){
+            data.forEach(function(d){
+                dataset.push(+d[scope.var]);
             });
-        svg.call(tip);
-        svg.selectAll("rect")
-            .data(dataset)
-            .enter()
-            .append("rect")
-            .attr("x", function (d, i) {
-                return i * (w / dataset.length);
+            console.log(dataset);
+           // dataset=data;
+            var x = d3.scale.linear()
+                .domain([0, 1])
+                .range([0, w]);
+            var svg = d3.select(".barchart")
+                .append("svg")
+                .attr("width", w)
+                .attr("height", h);
+            var bardata = d3.layout.histogram().bins(5)(dataset);
+            var tip = d3.tip()
+                .attr('class', 'tip')
+                .offset([-5, 0])
+                .html(function (d) {
+                    return d;
+                });
+            svg.call(tip);
+            svg.selectAll("rect")
+                .data(bardata)
+                .enter()
+                .append("rect")
+                .attr("x", function (d) {
+                    return d.x;
+                })
+                .attr("y", function (d) {
+                    return d.y;
+                })
+                .attr("width", bardata[0].dx)
+                .attr("height", function (d) {
+                    return h- d.y;
+                })
+                //.on('mouseover', function (d, i) {
+                //    console.log(scope.size);
+                //    $(this).attr("x",
+                //        i * (w / bardata.length) - scope.size/4);
+                //    $(this).attr("width", parseFloat(scope.size) + scope.size/2);
+                //    $(this).attr("y", h - d * 4 - 10);
+                //    $(this).attr("height", d * 4 + 10);
+                //    $(this).css("opacity", 1);
+                //
+                //    tip.show(d)
+                //})
+                //.on('mouseout', function (d, i) {
+                //    $(this).attr("x",
+                //        i * (w / bardata.length));
+                //    $(this).attr("width", scope.size);
+                //    $(this).attr("y", h - d * 4);
+                //    $(this).attr("height", d * 4);
+                //    $(this).css("opacity", 0.6);
+                //    tip.hide(d);
+                //});
+               scope.$watch('size',function(){
+                //console.log(scope.size);
+                svg.selectAll("rect").attr("width",scope.size);
             })
-            .attr("y", function (d) {
-                return h - (d * 4);
-            })
-            .attr("width", scope.size)
-            .attr("height", function (d) {
-                return d * 4;
-            })
-            .on('mouseover', function (d, i) {
-                console.log(scope.size);
-                $(this).attr("x",
-                    i * (w / dataset.length) - scope.size/4);
-                $(this).attr("width", parseFloat(scope.size) + scope.size/2);
-                $(this).attr("y", h - d * 4 - 10);
-                $(this).attr("height", d * 4 + 10);
-                $(this).css("opacity", 1);
-
-                tip.show(d)
-            })
-            .on('mouseout', function (d, i) {
-                $(this).attr("x",
-                    i * (w / dataset.length));
-                $(this).attr("width", scope.size);
-                $(this).attr("y", h - d * 4);
-                $(this).attr("height", d * 4);
-                $(this).css("opacity", 0.6);
-                tip.hide(d);
-            });
-
-        scope.$watch('size',function(){
-            //console.log(scope.size);
-            svg.selectAll("rect").attr("width",scope.size);
         })
+
+
     }
     var controller = function ($scope) {
 
@@ -70,7 +79,9 @@ app.directive("barChart", function () {
     return {
         restrict: 'AE',
         scope: {
-            "size": "="
+            "size": "=",
+            "data": "@",
+            "var": "="
         },
         link: link,
         controller: controller,
