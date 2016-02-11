@@ -2,147 +2,163 @@
  * Created by XinheHuang on 2016/2/6.
  */
 var app = angular.module('myApp', []);
-app.controller('barchartCtrl',function($scope,$templateCache){
-    $scope.vars=["time","AirPassengers"];
+app.controller('barchartCtrl', function ($scope, $templateCache) {
+    $scope.vars = ["time", "AirPassengers"];
+    $scope.config = {
+        width: 1700,
+        height: 800,
+        padding: 0.5,
+
+        margin: {top: 80, right: 20, bottom: 30, left: 50},
+    }
+
 })
 app.directive("barChart", function () {
     var link = function (scope, element, attrs) {
-        var w = 400;
-        var h = 100;
-        var dataset=[];
-        d3.csv(scope.data,function(data){
-            data.forEach(function(d){
-                dataset.push(+d[scope.var]);
-            });
-            console.log(dataset);
-           // dataset=data;
-            var x = d3.scale.linear()
-                .domain([0, 1])
-                .range([0, w]);
-            var svg = d3.select(".barchart")
-                .append("svg")
-                .attr("width", w)
-                .attr("height", h);
-            var bardata = d3.layout.histogram().bins(5)(dataset);
-            var tip = d3.tip()
-                .attr('class', 'tip')
-                .offset([-5, 0])
-                .html(function (d) {
-                    return d;
+        var config = scope.config;
+        var margin = config.margin;
+        var w = config.width - margin.left - margin.right;
+        var h = config.height - margin.top - margin.bottom;
+
+
+
+        d3.csv(scope.data, function (data) {
+
+            var updateChart = function () {
+                var values = [];
+                data.forEach(function (d) {
+                    values.push(+d[scope.var]);
                 });
-            svg.call(tip);
-            svg.selectAll("rect")
-                .data(bardata)
-                .enter()
-                .append("rect")
-                .attr("x", function (d) {
+
+                var dataset = d3.layout.histogram()
+                    .bins(+scope.binsize)
+                    (values);
+
+                var xdomain = dataset.map(function (d) {
                     return d.x;
-                })
-                .attr("y", function (d) {
-                    return d.y;
-                })
-                .attr("width", bardata[0].dx)
-                .attr("height", function (d) {
-                    return h- d.y;
-                })
-                //.on('mouseover', function (d, i) {
-                //    console.log(scope.size);
-                //    $(this).attr("x",
-                //        i * (w / bardata.length) - scope.size/4);
-                //    $(this).attr("width", parseFloat(scope.size) + scope.size/2);
-                //    $(this).attr("y", h - d * 4 - 10);
-                //    $(this).attr("height", d * 4 + 10);
-                //    $(this).css("opacity", 1);
-                //
-                //    tip.show(d)
-                //})
-                //.on('mouseout', function (d, i) {
-                //    $(this).attr("x",
-                //        i * (w / bardata.length));
-                //    $(this).attr("width", scope.size);
-                //    $(this).attr("y", h - d * 4);
-                //    $(this).attr("height", d * 4);
-                //    $(this).css("opacity", 0.6);
-                //    tip.hide(d);
-                //});
-               scope.$watch('size',function(){
-                //console.log(scope.size);
-                svg.selectAll("rect").attr("width",scope.size);
+                });
+                xdomain.push(dataset[dataset.length - 1].x + dataset[0].dx);
+
+                var x = d3.scale.ordinal()
+                    .domain(xdomain)
+                    .rangeBands([0, w]);
+                var maxheight = d3.max(dataset, function (d) {
+                    return d.y
+                });
+
+                var y = d3.scale.linear()
+                    .range([h, 0])
+                    .domain([0, maxheight]);
+
+                var xAxis = d3.svg.axis()
+                    .scale(x)
+                    .orient("bottom")
+                    .tickFormat(d3.format(".1f"));
+                var yAxis = d3.svg.axis()
+                    .scale(y)
+                    .orient("left").ticks(maxheight);
+
+
+                var l = x(dataset[1].x) - x(dataset[0].x);
+                d3.select(".barchart svg").remove()
+                var svg = d3.select(".barchart")
+                    .append("svg")
+                    .attr("width", config.width)
+                    .attr("height", config.height)
+                    .append("g")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                ;
+
+                var tip = d3.tip()
+                    .attr('class', 'tip')
+                    .offset([-5, 0])
+                    .html(function (d) {
+                        return d;
+                    });
+
+
+                svg.append("g")
+                    .attr("class", "x axis")
+                    .attr("transform", "translate(0," + h + ")")
+                    .call(xAxis)
+
+                svg.append("g")
+                    .attr("class", "y axis")
+                    .call(yAxis)
+                    .append("text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("y", 6)
+                    .attr("dy", ".71em")
+                    .style("text-anchor", "end");
+
+
+                var firstX = d3.transform(svg.select(".axis .tick").attr("transform")).translate[0];
+
+
+                svg.call(tip);
+                svg.selectAll("rect")
+                    .data(dataset)
+                    .enter()
+                    .append("rect")
+                    .attr("x", function (d, i) {
+                        return firstX + x(d.x) + (1 - config.padding) / 2 * l;
+                    })
+                    .attr("y", function (d) {
+                        return h - (d.y * h / maxheight);
+                    })
+                    .attr("width", l * config.padding)
+                    .attr("height", function (d) {
+                        return d.y * h / maxheight;
+                    })
+                    .on('mouseover', function (d, i) {
+
+                        $(this).attr("x", firstX + x(d.x) + (1 - config.padding) / 2 * l - l * config.padding * 0.05);
+                        $(this).attr("width", l * config.padding + l * config.padding * 0.1);
+                        $(this).attr("y", h - (d.y * h / maxheight) - $(this).attr("height") * 0.05);
+                        $(this).attr("height", (d.y * h / maxheight) + $(this).attr("height") * 0.05);
+                        $(this).css("opacity", 1);
+
+                        tip.show(d.y)
+                    })
+                    .on('mouseout', function (d, i) {
+                        $(this).attr("x", firstX + x(d.x) + (1 - config.padding) / 2 * l);
+                        $(this).attr("width", l * config.padding);
+                        $(this).attr("y", h - (d.y * h / maxheight));
+                        $(this).attr("height", d.y * h / maxheight);
+                        $(this).css("opacity", 0.6);
+                        tip.hide(d.y);
+                    });
+
+
+            }
+            updateChart();
+            scope.$watchGroup(['var','binsize'], function () {
+
+                console.log ('update');
+                updateChart();
             })
-        })
 
 
-    }
-    var controller = function ($scope) {
+    })
+}
 
-    }
-    return {
-        restrict: 'AE',
-        scope: {
-            "size": "=",
-            "data": "@",
-            "var": "="
-        },
-        link: link,
-        controller: controller,
-        templateUrl: 'templates/bar-chart.html'
-    };
+var controller = function ($scope) {
+
+}
+return {
+    restrict: 'AE',
+    scope: {
+        "binsize": "=",
+        "data": "@",
+        "var": "=",
+        "config": "="
+    },
+    link: link,
+    controller: controller,
+    templateUrl: 'templates/bar-chart.html'
+};
 })
 
-//
-//var barChart = function () {
-//    var w = 400;
-//    var h = 100;
-//    var barPadding = 10;
-//
-//
-////Create SVG element
-//    var svg = d3.select(".barchart")
-//        .append("svg")
-//        .attr("width", w)
-//        .attr("height", h);
-//
-//    var tip = d3.tip()
-//        .attr('class', 'tip')
-//        .offset([-5, 0])
-//        .html(function (d) {
-//            return d;
-//        });
-//    svg.call(tip);
-//    svg.selectAll("rect")
-//        .data(dataset)
-//        .enter()
-//        .append("rect")
-//        .attr("x", function (d, i) {
-//            return i * (w / dataset.length);
-//        })
-//        .attr("y", function (d) {
-//            return h - (d * 4);
-//        })
-//        .attr("width", w / dataset.length - barPadding)
-//        .attr("height", function (d) {
-//            return d * 4;
-//        })
-//        .on('mouseover', function (d, i) {
-//            $(this).attr("x",
-//                i * (w / dataset.length) - 2.5);
-//            $(this).attr("width", w / dataset.length - barPadding + 5);
-//            $(this).attr("y", h - d * 4 - 10);
-//            $(this).attr("height", d * 4 + 10);
-//            $(this).css("opacity", 1);
-//
-//            tip.show(d)
-//        })
-//        .on('mouseout', function (d, i) {
-//            $(this).attr("x",
-//                i * (w / dataset.length));
-//            $(this).attr("width", w / dataset.length - barPadding);
-//            $(this).attr("y", h - d * 4);
-//            $(this).attr("height", d * 4);
-//            $(this).css("opacity", 0.6);
-//            tip.hide(d);
-//        });
-//};
 
 var pieChart = function () {
     var w = 200;
@@ -559,8 +575,8 @@ var forceChart = function () {
 
     force.on("tick", function () {
         link.attr("x1", function (d) {
-            return d.source.x;
-        })
+                return d.source.x;
+            })
             .attr("y1", function (d) {
                 return d.source.y;
             })
@@ -572,8 +588,8 @@ var forceChart = function () {
             });
 
         node.attr("cx", function (d) {
-            return d.x;
-        })
+                return d.x;
+            })
             .attr("cy", function (d) {
                 return d.y;
             });

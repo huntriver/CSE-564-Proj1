@@ -3,26 +3,51 @@
 <head>
     <meta charset="utf-8">
     <title>D3 Page Template</title>
-    <script type="text/javascript" src="d3/d3.v3.js"></script>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="d3/d3.v3.js"></script>
+
     <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
     <style>
-        .barchart{
+        .dropdown{
+            margin-top: 10px;
+            margin-left: 20px;
+        }
+        .slider{
+            margin-top: 10px;
+            margin-left: 20px;
+        }
+        .barchart {
+
+            text-align: center;
+        }
+
+        .barchart rect {
+            fill: red;
+            opacity: 0.6
+        }
+
+        .barchart .axis text {
+            font-size: 15px;
+            fill: #4A4A4A;
+        }
+
+        .barchart .axis path,
+        .barchart .axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+
+        .piechart {
             margin-left: 50px;
             margin-top: 50px;
         }
-        rect {
-            fill: red;
-            opacity: 0.6;
-        }
 
-        .piechart{
-            margin-left:50px;
-            margin-top: 50px;
-        }
-        .forcechart{
-            margin-left:50px;
+        .forcechart {
+            margin-left: 50px;
             margin-top: 50px;
         }
 
@@ -38,22 +63,61 @@
 
     </style>
 </head>
-<body ng-app="myApp" >
-<button ng-click="chart='barchart'">barchart</button>
-<button ng-click="chart='piechart'">piechart</button>
-<button ng-click="chart='forcechart'">forcechart</button>
-{{chart}}
-<div ng-show="chart=='barchart'"  ng-controller="barchartCtrl">
-    <div><input type="range" min="0" max="10" ng-model="size" ng-init="size=4">{{size}}</div>
-    <select ng-options="var for var in vars" ng-model="selectedVar" ng-init="selectedVar=vars[0]"></select>
-    <div bar-chart size="size" data="AirPassengers.csv" var="selectedVar"></div>
-</div>
-<div class="piechart" ng-show="chart=='piechart'">
-</div>
-<div class="forcechart" ng-show="chart=='forcechart'">
-</div>
-<script type="text/javascript" src="myapp.js"></script>
+<body ng-app="myApp">
+<div col-md-12>
 
+    <div class="row buttons">
+        <div class="btn-group btn-group-justified" ng-init="chart='barchart'">
+            <a class="btn btn-primary " ng-click="chart='barchart'" ng-class="{'active':chart=='barchart'}">barchart</a>
+
+
+            <a class="btn btn-primary" ng-click="chart='piechart'" ng-class="{'active':chart=='piechart'}">piechart</a>
+
+            <a class="btn btn-primary " ng-click="chart='forcechart'" ng-class="{'active':chart=='forcechart'}">forcechart</a>
+
+        </div>
+    </div>
+
+
+    <div class="row charts">
+        <div ng-show="chart=='barchart'" ng-controller="barchartCtrl">
+
+            <div class="col-md-1">
+                  <div class="row slider">
+                      <h4>Bin Size:</h4>
+                    <input type="range" min="2" max="20" ng-model="binSize" ng-init="binSize=10">{{binSize}}
+                  </div>
+
+                    <div class="dropdown" ng-init="selectedVar=vars[0]">
+                        <h5>Select Variable</h5>
+                        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">{{selectedVar}}
+                            <span class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                            <li ng-repeat="var in vars"><a  href="#" ng-click="$parent.selectedVar=var">{{var}}</a></li>
+                        </ul>
+                    </div>
+                    <!--<select ng-options="var for var in vars" ng-model="selectedVar" ng-init="selectedVar=vars[1]"></select>-->
+
+            </div>
+
+            <div class="col-md-11 chart">
+                <div bar-chart binsize="binSize" data="AirPassengers.csv" var="selectedVar" config="config"></div>
+
+            </div>
+        </div>
+
+        <div class="piechart" ng-show="chart=='piechart'">
+        </div>
+
+        <div class="forcechart" ng-show="chart=='forcechart'">
+
+        </div>
+    </div>
+
+</div>
+
+
+<script type="text/javascript" src="myapp.js"></script>
 </body>
 
 </html>
