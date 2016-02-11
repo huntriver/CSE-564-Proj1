@@ -2,25 +2,24 @@
  * Created by XinheHuang on 2016/2/6.
  */
 var app = angular.module('myApp', []);
+
 app.controller('barchartCtrl', function ($scope, $templateCache) {
     $scope.vars = ["time", "AirPassengers"];
     $scope.config = {
-        width: 1700,
+        width: 1000,
         height: 800,
         padding: 0.5,
-
-        margin: {top: 80, right: 20, bottom: 30, left: 50},
+        margin: {top: 20, right: 20, bottom: 30, left: 50},
     }
 
 })
+
 app.directive("barChart", function () {
     var link = function (scope, element, attrs) {
         var config = scope.config;
         var margin = config.margin;
         var w = config.width - margin.left - margin.right;
         var h = config.height - margin.top - margin.bottom;
-
-
 
         d3.csv(scope.data, function (data) {
 
@@ -34,164 +33,178 @@ app.directive("barChart", function () {
                     .bins(+scope.binsize)
                     (values);
 
-                var xdomain = dataset.map(function (d) {
-                    return d.x;
-                });
-                xdomain.push(dataset[dataset.length - 1].x + dataset[0].dx);
-
-                var x = d3.scale.ordinal()
-                    .domain(xdomain)
-                    .rangeBands([0, w]);
-                var maxheight = d3.max(dataset, function (d) {
-                    return d.y
-                });
-
-                var y = d3.scale.linear()
-                    .range([h, 0])
-                    .domain([0, maxheight]);
-
-                var xAxis = d3.svg.axis()
-                    .scale(x)
-                    .orient("bottom")
-                    .tickFormat(d3.format(".1f"));
-                var yAxis = d3.svg.axis()
-                    .scale(y)
-                    .orient("left").ticks(maxheight);
-
-
-                var l = x(dataset[1].x) - x(dataset[0].x);
-                d3.select(".barchart svg").remove()
-                var svg = d3.select(".barchart")
-                    .append("svg")
-                    .attr("width", config.width)
-                    .attr("height", config.height)
-                    .append("g")
-                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-                ;
-
-                var tip = d3.tip()
-                    .attr('class', 'tip')
-                    .offset([-5, 0])
-                    .html(function (d) {
-                        return d;
+                var barChart=function() {
+                    var maxheight = d3.max(dataset, function (d) {
+                        return d.y
                     });
 
-
-                svg.append("g")
-                    .attr("class", "x axis")
-                    .attr("transform", "translate(0," + h + ")")
-                    .call(xAxis)
-
-                svg.append("g")
-                    .attr("class", "y axis")
-                    .call(yAxis)
-                    .append("text")
-                    .attr("transform", "rotate(-90)")
-                    .attr("y", 6)
-                    .attr("dy", ".71em")
-                    .style("text-anchor", "end");
-
-
-                var firstX = d3.transform(svg.select(".axis .tick").attr("transform")).translate[0];
-
-
-                svg.call(tip);
-                svg.selectAll("rect")
-                    .data(dataset)
-                    .enter()
-                    .append("rect")
-                    .attr("x", function (d, i) {
-                        return firstX + x(d.x) + (1 - config.padding) / 2 * l;
-                    })
-                    .attr("y", function (d) {
-                        return h - (d.y * h / maxheight);
-                    })
-                    .attr("width", l * config.padding)
-                    .attr("height", function (d) {
-                        return d.y * h / maxheight;
-                    })
-                    .on('mouseover', function (d, i) {
-
-                        $(this).attr("x", firstX + x(d.x) + (1 - config.padding) / 2 * l - l * config.padding * 0.05);
-                        $(this).attr("width", l * config.padding + l * config.padding * 0.1);
-                        $(this).attr("y", h - (d.y * h / maxheight) - $(this).attr("height") * 0.05);
-                        $(this).attr("height", (d.y * h / maxheight) + $(this).attr("height") * 0.05);
-                        $(this).css("opacity", 1);
-
-                        tip.show(d.y)
-                    })
-                    .on('mouseout', function (d, i) {
-                        $(this).attr("x", firstX + x(d.x) + (1 - config.padding) / 2 * l);
-                        $(this).attr("width", l * config.padding);
-                        $(this).attr("y", h - (d.y * h / maxheight));
-                        $(this).attr("height", d.y * h / maxheight);
-                        $(this).css("opacity", 0.6);
-                        tip.hide(d.y);
+                    var xdomain = dataset.map(function (d) {
+                        return d.x;
                     });
+                    xdomain.push(dataset[dataset.length - 1].x + dataset[0].dx);
+
+                    var tip = d3.tip()
+                        .attr('class', 'tip')
+                        .offset([-5, 0])
+                        .html(function (d) {
+                            return d;
+                        });
+
+
+                    var x = d3.scale.ordinal()
+                        .domain(xdomain)
+                        .rangeBands([0, w]);
+
+                    var y = d3.scale.linear()
+                        .range([h, 0])
+                        .domain([0, maxheight]);
+
+                    var xAxis = d3.svg.axis()
+                        .scale(x)
+                        .orient("bottom")
+                        .tickFormat(d3.format(".1f"));
+                    var yAxis = d3.svg.axis()
+                        .scale(y)
+                        .orient("left").ticks(maxheight);
+
+
+                    var l = x(dataset[1].x) - x(dataset[0].x); //width between two ticks
+                    d3.select(".cChart svg").remove()
+                    var svg = d3.select(".cChart")
+                        .append("svg")
+                        .attr("id",'barchart')
+                        .attr("width", config.width)
+                        .attr("height", config.height)
+                        .append("g")
+                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                    ;
+
+                    svg.append("g")
+                        .attr("class", "x axis")
+                        .attr("transform", "translate(0," + h + ")")
+                        .call(xAxis)
+
+                    svg.append("g")
+                        .attr("class", "y axis")
+                        .call(yAxis)
+                        .append("text")
+                        .attr("transform", "rotate(-90)")
+                        .attr("y", 6)
+                        .attr("dy", ".71em")
+                        .style("text-anchor", "end");
+
+
+                    var firstX = d3.transform(svg.select(".axis .tick").attr("transform")).translate[0];
+
+                    svg.call(tip);
+                    svg.selectAll("rect")
+                        .data(dataset)
+                        .enter()
+                        .append("rect")
+                        .attr("x", function (d, i) {
+                            return firstX + x(d.x) + (1 - config.padding) / 2 * l;
+                        })
+                        .attr("y", function (d) {
+                            return h - (d.y * h / maxheight);
+                        })
+                        .attr("width", l * config.padding)
+                        .attr("height", function (d) {
+                            return d.y * h / maxheight;
+                        })
+                        .on('mouseover', function (d, i) {
+
+                            $(this).attr("x", firstX + x(d.x) + (1 - config.padding) / 2 * l - l * config.padding * 0.05);
+                            $(this).attr("width", l * config.padding + l * config.padding * 0.1);
+                            $(this).attr("y", h - (d.y * h / maxheight) - $(this).attr("height") * 0.05);
+                            $(this).attr("height", (d.y * h / maxheight) + $(this).attr("height") * 0.05);
+                            $(this).css("opacity", 1);
+
+                            tip.show(d.y)
+                        })
+                        .on('mouseout', function (d, i) {
+                            $(this).attr("x", firstX + x(d.x) + (1 - config.padding) / 2 * l);
+                            $(this).attr("width", l * config.padding);
+                            $(this).attr("y", h - (d.y * h / maxheight));
+                            $(this).attr("height", d.y * h / maxheight);
+                            $(this).css("opacity", 0.6);
+                            tip.hide(d.y);
+                        });
+                }
+                var pieChart=function(){
+                    var r = (w>h?h:w) / 2;
+                    var color = d3.scale.category20();
+                    d3.select(".chart svg").remove();
+                    console.log(w);
+                    console.log(h);
+                    var svg = d3.select(".cChart")
+                        .append("svg")
+                        .attr("id",'piechart')
+                        .attr("width", w)
+                        .attr("height", h)
+                        .append('g')
+                        .attr('transform', 'translate(' + (w / 2) + ',' + (h / 2) + ')');
+                    var pie = d3.layout.pie().sort(null).value(function (d) {
+                        return d
+                    });
+                    console.log(dataset);
+                    var piedata=dataset.map(function(d){
+
+                        return d.y;
+                    })
+                    console.log(piedata);
+                    var arc = d3.svg.arc()
+                        .innerRadius(0)
+                        .outerRadius(r);
+
+                    var path = svg.selectAll("path")
+                        .data(pie(piedata))
+                        .enter()
+                        .append("path")
+                        .attr("d", arc)
+                        .style("fill", function (d, i) {
+                            return color(i);
+                        });
+                }
+                switch (scope.type){
+                    case 'barchart':barChart();
+                        break;
+                    case 'piechart':pieChart();
+                        break;
+                }
+
+
 
 
             }
             updateChart();
-            scope.$watchGroup(['var','binsize'], function () {
+            scope.$watchGroup(['var', 'binsize','type'], function () {
 
-                console.log ('update');
+                console.log('update');
                 updateChart();
             })
 
 
-    })
-}
+        })
+    }
 
-var controller = function ($scope) {
+    var controller = function ($scope) {
 
-}
-return {
-    restrict: 'AE',
-    scope: {
-        "binsize": "=",
-        "data": "@",
-        "var": "=",
-        "config": "="
-    },
-    link: link,
-    controller: controller,
-    templateUrl: 'templates/bar-chart.html'
-};
+    }
+    return {
+        restrict: 'AE',
+        scope: {
+            "binsize": "=",
+            "data": "@",
+            "var": "=",
+            "config": "=",
+            "type": "="
+        },
+        link: link,
+        controller: controller,
+        template: "<div class='cChart'></div>"
+    };
 })
 
-
-var pieChart = function () {
-    var w = 200;
-    var h = 200;
-    var r = h / 2;
-    var color = d3.scale.category20();
-    var svg = d3.select(".piechart")
-        .append("svg")
-        .attr("width", w)
-        .attr("height", h)
-        .append('g')
-        .attr('transform', 'translate(' + (w / 2) + ',' + (h / 2) + ')');
-
-
-    var pie = d3.layout.pie().sort(null).value(function (d) {
-        return d
-    });
-
-    var arc = d3.svg.arc()
-        .innerRadius(0)
-        .outerRadius(r);
-
-    var path = svg.selectAll("path")
-        .data(pie(dataset))
-        .enter()
-        .append("path")
-        .attr("d", arc)
-        .style("fill", function (d, i) {
-            return color(i);
-        });
-
-
-};
 
 var forceChart = function () {
     var width = 960,

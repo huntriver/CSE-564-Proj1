@@ -11,40 +11,43 @@
     <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
     <style>
-        .dropdown{
-            margin-top: 10px;
-            margin-left: 20px;
-        }
-        .slider{
-            margin-top: 10px;
-            margin-left: 20px;
-        }
-        .barchart {
+        .dropdown {
 
+            margin: 50px 15px 10px 30px;
+
+        }
+
+        .slider {
+            margin: 50px 15px 50px 10px;
+            width:100%;
+            text-align:center;
+        }
+        .btn-group{
+            text-align: center;
+        }
+        .cChart {
+            margin: 50px 10px 10px 10px;
             text-align: center;
         }
 
-        .barchart rect {
+        #barchart rect {
             fill: red;
             opacity: 0.6
         }
 
-        .barchart .axis text {
+        #barchart .axis text {
             font-size: 15px;
             fill: #4A4A4A;
         }
 
-        .barchart .axis path,
-        .barchart .axis line {
+        #barchart .axis path,
+        #barchart .axis line {
             fill: none;
             stroke: #000;
             shape-rendering: crispEdges;
         }
 
-        .piechart {
-            margin-left: 50px;
-            margin-top: 50px;
-        }
+
 
         .forcechart {
             margin-left: 50px;
@@ -64,54 +67,43 @@
     </style>
 </head>
 <body ng-app="myApp">
-<div col-md-12>
-
-    <div class="row buttons">
-        <div class="btn-group btn-group-justified" ng-init="chart='barchart'">
-            <a class="btn btn-primary " ng-click="chart='barchart'" ng-class="{'active':chart=='barchart'}">barchart</a>
-
-
-            <a class="btn btn-primary" ng-click="chart='piechart'" ng-class="{'active':chart=='piechart'}">piechart</a>
-
-            <a class="btn btn-primary " ng-click="chart='forcechart'" ng-class="{'active':chart=='forcechart'}">forcechart</a>
-
-        </div>
-    </div>
-
+<div col-md-12 ng-controller="barchartCtrl">
 
     <div class="row charts">
-        <div ng-show="chart=='barchart'" ng-controller="barchartCtrl">
 
-            <div class="col-md-1">
-                  <div class="row slider">
-                      <h4>Bin Size:</h4>
-                    <input type="range" min="2" max="20" ng-model="binSize" ng-init="binSize=10">{{binSize}}
-                  </div>
-
-                    <div class="dropdown" ng-init="selectedVar=vars[0]">
-                        <h5>Select Variable</h5>
-                        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">{{selectedVar}}
-                            <span class="caret"></span></button>
-                        <ul class="dropdown-menu">
-                            <li ng-repeat="var in vars"><a  href="#" ng-click="$parent.selectedVar=var">{{var}}</a></li>
-                        </ul>
-                    </div>
-                    <!--<select ng-options="var for var in vars" ng-model="selectedVar" ng-init="selectedVar=vars[1]"></select>-->
-
+        <div class="col-md-3">
+            <div class="row slider">
+                <h4>Bin Size:</h4>
+                <input type="range" min="2" max="20" ng-model="binSize" ng-init="binSize=10">{{binSize}}
             </div>
 
-            <div class="col-md-11 chart">
-                <div bar-chart binsize="binSize" data="AirPassengers.csv" var="selectedVar" config="config"></div>
-
+            <div class="dropdown" ng-init="selectedVar=vars[0]">
+                <h4>Select Variable</h4>
+                <button class="btn btn-primary btn-lg dropdown-toggle" type="button" data-toggle="dropdown">{{selectedVar}}
+                    <span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                    <li ng-repeat="var in vars"><a href="#" ng-click="$parent.selectedVar=var">{{var}}</a></li>
+                </ul>
             </div>
-        </div>
-
-        <div class="piechart" ng-show="chart=='piechart'">
-        </div>
-
-        <div class="forcechart" ng-show="chart=='forcechart'">
+            <!--<select ng-options="var for var in vars" ng-model="selectedVar" ng-init="selectedVar=vars[1]"></select>-->
 
         </div>
+
+        <div class="col-md-9 chart">
+            <div class="buttons container">
+                <div class="btn-group btn-group-justified" ng-init="chart='barchart'">
+                    <a class="btn btn-primary btn-lg" ng-click="chart='barchart'" ng-class="{'active':chart=='barchart'}">barchart</a>
+
+
+                    <a class="btn btn-primary btn-lg" ng-click="chart='piechart'" ng-class="{'active':chart=='piechart'}">piechart</a>
+
+                    <a class="btn btn-primary btn-lg" ng-click="chart='forcechart'" ng-class="{'active':chart=='forcechart'}">forcechart</a>
+
+                </div>
+            </div>
+            <div bar-chart binsize="binSize" data="AirPassengers.csv" var="selectedVar" config="config" type="chart"></div>
+        </div>
+
     </div>
 
 </div>
