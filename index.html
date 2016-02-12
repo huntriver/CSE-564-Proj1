@@ -48,7 +48,15 @@
         }
 
 
+        #piechart .pie text {
+            font: 10px sans-serif;
+            text-anchor: middle;
+            font-weight: bold;
+        }
 
+        #piechart .pie path {
+            stroke: #fff;
+        }
         .forcechart {
             margin-left: 50px;
             margin-top: 50px;
@@ -64,6 +72,13 @@
             stroke-opacity: .6;
         }
 
+        .tip {
+            background: rgba(0,0,0,0.8);
+            color: #fff;
+            border-radius: 4px;
+            z-index:10000;
+            padding: 12px;
+        }
     </style>
 </head>
 <body ng-app="myApp">

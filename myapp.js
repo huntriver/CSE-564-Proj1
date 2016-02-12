@@ -9,7 +9,7 @@ app.controller('barchartCtrl', function ($scope, $templateCache) {
         width: 1000,
         height: 800,
         padding: 0.5,
-        margin: {top: 20, right: 20, bottom: 30, left: 50},
+        margin: {top: 40, right: 20, bottom: 30, left: 50},
     }
 
 })
@@ -131,11 +131,41 @@ app.directive("barChart", function () {
                         });
                 }
                 var pieChart=function(){
-                    var r = (w>h?h:w) / 2;
+                    var radius = (w>h?h:w) / 2-20;
                     var color = d3.scale.category20();
                     d3.select(".chart svg").remove();
                     console.log(w);
                     console.log(h);
+                    var piedata=dataset.map(function(d){
+
+                        return {"y":d.y,"x": d.x,"dx": d.dx,};
+                    })
+                    var pie = d3.layout.pie()
+                        .sort(null).value(function(d){return d.y});
+
+
+                    var arc = d3.svg.arc()
+                        .innerRadius(0)
+                        .outerRadius(radius);
+
+                    var harc = d3.svg.arc()
+                        .innerRadius(0)
+                        .outerRadius(radius+10);
+                    var labelArc = d3.svg.arc()
+                        .outerRadius(radius-60)
+                        .innerRadius(radius - 60);
+                    var tip = d3.tip()
+                        .attr('class', 'tip')
+                        //.offset(function() {
+                        //    return [this.getBBox().height / 2, 0]
+                        //})
+                        .direction('n')
+                        .html(function (d) {
+                           // return d3.format(".1f")(d.data.x)+"-"+d3.format(".1f")(d.data.x+d.data.dx);
+                            return "<strong>"+d3.format(".1f")(d.data.x)+"~"+d3.format(".1f")(d.data.x+d.data.dx)+": </strong><span>"+d.data.y+"</span><br>";
+                        });
+
+
                     var svg = d3.select(".cChart")
                         .append("svg")
                         .attr("id",'piechart')
@@ -143,27 +173,100 @@ app.directive("barChart", function () {
                         .attr("height", h)
                         .append('g')
                         .attr('transform', 'translate(' + (w / 2) + ',' + (h / 2) + ')');
-                    var pie = d3.layout.pie().sort(null).value(function (d) {
-                        return d
-                    });
-                    console.log(dataset);
-                    var piedata=dataset.map(function(d){
 
-                        return d.y;
-                    })
-                    console.log(piedata);
-                    var arc = d3.svg.arc()
-                        .innerRadius(0)
-                        .outerRadius(r);
+                    svg.call(tip);
 
-                    var path = svg.selectAll("path")
+                    var g = svg.selectAll("path.pie")
                         .data(pie(piedata))
-                        .enter()
-                        .append("path")
+                        .enter().append("g")
+                        .                attr("class", 'pie');
+
+                    g.append("path")
+                        .attr("fill", function(d, i) { return color(i); })
                         .attr("d", arc)
-                        .style("fill", function (d, i) {
-                            return color(i);
+
+
+                        .on('mouseover', function(d,i){
+                         //   d3.select(this).select("text").style("opacity",0);
+                            d3.select(this).transition().attr("d", harc);
+                            tip.show(d);
+                        }).on('mouseout', function(d,i){
+
+                            d3.select(this).transition().attr("d", arc);
+                        tip.hide(d);
                         });
+
+                    //g.append("text")
+                    //    .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
+                    //    .attr("dy", ".35em")
+                    //    .text(function(d) {
+                    //
+                    //        return d3.format(".1f")(d.data.x)+"~"+d3.format(".1f")(d.data.x+d.data.dx); });
+
+
+
+                    //var svg = d3.select(".cChart")
+                    //    .append("svg")
+                    //    .attr("id",'piechart')
+                    //    .attr("width", w)
+                    //    .attr("height", h)
+                    //    .append('g')
+                    //    .attr('transform', 'translate(' + (w / 2) + ',' + (h / 2) + ')');
+                    //var tip = d3.tip()
+                    //    .attr('class', 'tip')
+                    //    .offset([-5, 0])
+                    //    .html(function (d) {
+                    //        return d;
+                    //    });
+                    //
+                    //svg.call(tip);
+                    //var pie = d3.layout.pie().sort(null).value(function (d) {
+                    //    return d
+                    //});
+                    //console.log(dataset);
+                    //var piedata=dataset.map(function(d){
+                    //
+                    //    return d.y;
+                    //})
+                    //console.log(piedata);
+                    //var arc = d3.svg.arc()
+                    //    .innerRadius(0)
+                    //    .outerRadius(r*1.1);
+                    //console.log(arc);
+                    //var arc1 = d3.svg.arc()
+                    //    .innerRadius(0)
+                    //    .outerRadius(r);
+                    //console.log(arc1);
+                    //var path = svg.selectAll("path")
+                    //    .data(pie(piedata))
+                    //    .enter()
+                    //    .append("path")
+                    //    .attr("d", arc)
+                    //    .style("fill", function (d, i) {
+                    //        return color(i);
+                    //    })
+                    //    .on('mouseover', function (d, i) {
+                    //        //
+                    //        //$(this).attr("x", firstX + x(d.x) + (1 - config.padding) / 2 * l - l * config.padding * 0.05);
+                    //        //$(this).attr("width", l * config.padding + l * config.padding * 0.1);
+                    //        //$(this).attr("y", h - (d.y * h / maxheight) - $(this).attr("height") * 0.05);
+                    //        //$(this).attr("height", (d.y * h / maxheight) + $(this).attr("height") * 0.05);
+                    //        //$(this).css("opacity", 1)
+                    //        $(this).attr("d",arc1);
+                    //
+                    //        tip.show(d.data)
+                    //    })
+                    //    .on('mouseout', function (d, i) {
+                    //        //$(this).attr("x", firstX + x(d.x) + (1 - config.padding) / 2 * l);
+                    //        //$(this).attr("width", l * config.padding);
+                    //        //$(this).attr("y", h - (d.y * h / maxheight));
+                    //        //$(this).attr("height", d.y * h / maxheight);
+                    //        //$(this).css("opacity", 0.6);
+                    //        $(this).attr("d",arc);
+                    //        tip.hide(d.data);
+                    //    });
+
+
                 }
                 switch (scope.type){
                     case 'barchart':barChart();
