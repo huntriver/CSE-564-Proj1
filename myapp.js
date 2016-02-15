@@ -6,10 +6,10 @@ var app = angular.module('myApp', []);
 app.controller('barchartCtrl', function ($scope, $templateCache) {
     $scope.vars = ["time", "AirPassengers"];
     $scope.config = {
-        width: 1000,
+        width: "100%",
         height: 800,
         padding: 0.5,
-        margin: {top: 40, right: 20, bottom: 30, left: 50},
+        margin: {top: 30, right: 40, bottom: 30, left: 30},
     }
 
 })
@@ -18,7 +18,11 @@ app.directive("barChart", function () {
     var link = function (scope, element, attrs) {
         var config = scope.config;
         var margin = config.margin;
-        var w = config.width - margin.left - margin.right;
+
+
+        var w = (config.width=="100%"? $('.cChart').width():config.width) - margin.left - margin.right;
+        console.log($('.cChart').width());
+        console.log(w);
         var h = config.height - margin.top - margin.bottom;
 
         d3.csv(scope.data, function (data) {
@@ -71,13 +75,19 @@ app.directive("barChart", function () {
                     var l = x(dataset[1].x) - x(dataset[0].x); //width between two ticks
                     d3.select(".cChart svg").remove()
                     var svg = d3.select(".cChart")
+                        //.append("div")
+                        //.attr("width",w+margin.left+margin.right)
+                        //.attr("height",h+margin.top+margin.bottom)
                         .append("svg")
                         .attr("id",'barchart')
-                        .attr("width", config.width)
-                        .attr("height", config.height)
+                        .attr("width",w+margin.left+margin.right)
+                        .attr("height",h+margin.top+margin.bottom)
                         .append("g")
-                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-                    ;
+                        .attr("width", w)
+                        .attr("height", h)
+
+                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+             ;
 
                     svg.append("g")
                         .attr("class", "x axis")
@@ -132,7 +142,7 @@ app.directive("barChart", function () {
                 }
                 var pieChart=function(){
                     var radius = (w>h?h:w) / 2-20;
-                    var color = d3.scale.category20();
+                    var color = d3.scale.category20b();
                     d3.select(".chart svg").remove();
                     console.log(w);
                     console.log(h);
@@ -187,11 +197,11 @@ app.directive("barChart", function () {
 
 
                         .on('mouseover', function(d,i){
-                         //   d3.select(this).select("text").style("opacity",0);
+                            d3.select(this).style("opacity",1);
                             d3.select(this).transition().attr("d", harc);
                             tip.show(d);
                         }).on('mouseout', function(d,i){
-
+                              d3.select(this).style("opacity",0.6);
                             d3.select(this).transition().attr("d", arc);
                         tip.hide(d);
                         });
@@ -304,7 +314,7 @@ app.directive("barChart", function () {
         },
         link: link,
         controller: controller,
-        template: "<div class='cChart'></div>"
+        template: ""
     };
 })
 

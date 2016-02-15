@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="00cb79cb-4068-4bda-93c5-b0aa411da31f" name="sparky.ic.sunysb.edu" url="http://www.ic.sunysb.edu/Stu/xinhhuang/">
+        <fileTransfer host="sparky.ic.sunysb.edu" port="21" password="dfc2dfd2dfc2df92df9fdf98df9cdf9cdf98df98" username="xinhhuang">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

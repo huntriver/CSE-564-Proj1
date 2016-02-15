@@ -11,6 +11,10 @@
     <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
     <style>
+        svg{
+            /*text-align:center;*/
+            /*width:100%;*/
+        }
         .dropdown {
 
             margin: 50px 15px 10px 30px;
@@ -19,15 +23,15 @@
 
         .slider {
             margin: 50px 15px 50px 10px;
-            width:100%;
-            text-align:center;
+
+
         }
         .btn-group{
             text-align: center;
         }
         .cChart {
-            margin: 50px 10px 10px 10px;
-            text-align: center;
+            margin: 50px 0px 0px 5px;
+
         }
 
         #barchart rect {
@@ -56,6 +60,7 @@
 
         #piechart .pie path {
             stroke: #fff;
+            opacity: 0.6
         }
         .forcechart {
             margin-left: 50px;
@@ -81,18 +86,32 @@
         }
     </style>
 </head>
-<body ng-app="myApp">
+<body ng-app="myApp" >
 <div col-md-12 ng-controller="barchartCtrl">
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">CSE564</a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Proj1</a></li>
+            <!--<li><a href="#">Page 1</a></li>-->
+            <!--<li><a href="#">Page 2</a></li>-->
+            <!--<li><a href="#">Page 3</a></li>-->
+        </ul>
+    </div>
+</nav>
 
-    <div class="row charts">
+
+    <div class="charts">
 
         <div class="col-md-3">
-            <div class="row slider">
+            <div class="well-lg slider">
                 <h4>Bin Size:</h4>
-                <input type="range" min="2" max="20" ng-model="binSize" ng-init="binSize=10">{{binSize}}
+                <input type="range" min="2" max="20" ng-model="binSize" ng-init="binSize=10"><span class="badge">{{binSize}}</span>
             </div>
 
-            <div class="dropdown" ng-init="selectedVar=vars[0]">
+            <div class="well-lg dropdown" ng-init="selectedVar=vars[0]">
                 <h4>Select Variable</h4>
                 <button class="btn btn-primary btn-lg dropdown-toggle" type="button" data-toggle="dropdown">{{selectedVar}}
                     <span class="caret"></span></button>
@@ -105,7 +124,7 @@
         </div>
 
         <div class="col-md-9 chart">
-            <div class="buttons container">
+            <div class="buttons">
                 <div class="btn-group btn-group-justified" ng-init="chart='barchart'">
                     <a class="btn btn-primary btn-lg" ng-click="chart='barchart'" ng-class="{'active':chart=='barchart'}">barchart</a>
 
@@ -116,7 +135,7 @@
 
                 </div>
             </div>
-            <div bar-chart binsize="binSize" data="AirPassengers.csv" var="selectedVar" config="config" type="chart"></div>
+            <div class="cChart" bar-chart binsize="binSize" data="AirPassengers.csv" var="selectedVar" config="config" type="chart"></div>
         </div>
 
     </div>
