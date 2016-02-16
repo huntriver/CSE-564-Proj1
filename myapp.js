@@ -16,7 +16,7 @@ app.controller('barchartCtrl', function ($scope, $templateCache) {
 
 })
 
-app.directive("barChart", function () {
+app.directive("barChart", function ($timeout) {
     var link = function (scope, element, attrs) {
         var config = scope.config;
         var margin = config.margin;
@@ -38,7 +38,8 @@ app.directive("barChart", function () {
                 var dataset = d3.layout.histogram()
                     .bins(+scope.binsize)
                     (values);
-
+                d3.select(".cChart svg").remove();
+                d3.select(".tip").remove();
                 var barChart = function () {
                     var maxheight = d3.max(dataset, function (d) {
                         return d.y
@@ -75,7 +76,7 @@ app.directive("barChart", function () {
 
 
                     var l = x(dataset[1].x) - x(dataset[0].x); //width between two ticks
-                    d3.select(".cChart svg").remove()
+
                     var svg = d3.select(".cChart")
                         //.append("div")
                         //.attr("width",w+margin.left+margin.right)
@@ -137,10 +138,19 @@ app.directive("barChart", function () {
                                 //    .style("top",h - (d.y * h / maxheight) - d3.select(this).attr("height") * 0.05-5);
 
                          //   console.log($(".tip").attr("y"));
+                            var tmp=d3.select(this).attr("height") * 0.05;
                             tip.show(d.y);
-                            //svg.select(".tip")
-                            //    .transition()
-                            //    .attr("translate","transform(0,-20)");
+
+                            d3.select(".tip")
+                            .transition()
+                              .style("top",function(){
+
+                                  var x=d3.select(this).style("top");
+
+                                  var a=parseFloat(x.substring(0,x.indexOf("px")))-tmp;
+
+                                  return a+"px";
+                              });
 
                         })
                         .on('mouseout', function (d, i) {
@@ -150,13 +160,24 @@ app.directive("barChart", function () {
                                 .attr("y", h - (d.y * h / maxheight))
                                 .attr("height", d.y * h / maxheight)
                                 .style("opacity", 0.6);
+                            var tmp=d3.select(this).attr("height") * 0.05;
+                            d3.select(".tip")
+
+                                .style("top",function(){
+                                    console.log('over');
+                                    var x=d3.select(this).style("top");
+
+                                    var a=parseFloat(x.substring(0,x.indexOf("px")))+tmp;
+
+                                    return a+"px";
+                                });
                             tip.hide(d.y);
                         });
                 }
                 var pieChart = function () {
                     var radius = (w > h ? h : w) / 2 - 20;
                     var color = d3.scale.category20b();
-                    d3.select(".chart svg").remove();
+                   // d3.select(".chart svg").remove();
                     console.log(w);
                     console.log(h);
                     var piedata = dataset.map(function (d) {
@@ -220,13 +241,26 @@ app.directive("barChart", function () {
 
                         .on('mouseover', function (d, i) {
                             d3.select(this).transition().attr("d", harc).style("opacity", 1);
+                            var leg=d3.selectAll(".legend").filter(function(d1){
+                                console.log(d1);
+                                console.log(i);
+                                return d1.color==i;
+                            })
+                            leg.select("rect").transition().style("opacity",1);
+                            leg.select("text").transition().style("font-size",15).style("font-weight","bold");
                             //d3.select(this).transition().;
                             // $('.legend rect').css("opacity",1);
 
                             tip.show(d);
                         }).on('mouseout', function (d, i) {
                         d3.select(this).transition().attr("d", arc).style("opacity", 0.6);
-
+                        var leg=d3.selectAll(".legend").filter(function(d1){
+                            console.log(d1);
+                            console.log(i);
+                            return d1.color==i;
+                        })
+                            leg.select("rect").transition().style("opacity",0.6);
+                        leg.select("text").transition().style("font-size",12).style("font-weight","bold");
                         // $('.legend rect').css("opacity",0.6);
 
                         tip.hide(d);
