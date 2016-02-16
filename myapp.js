@@ -49,12 +49,12 @@ app.directive("barChart", function () {
                     });
                     xdomain.push(dataset[dataset.length - 1].x + dataset[0].dx);
                     //
-                    //var tip = d3.tip()
-                    //    .attr('class', 'tip')
-                    //    .offset([25, 0])
-                    //    .html(function (d) {
-                    //        return d;
-                    //    });
+                    var tip = d3.tip()
+                        .attr('class', 'tip')
+                        .offset([-5, 0])
+                        .html(function (d) {
+                            return d;
+                        });
 
 
                     var x = d3.scale.ordinal()
@@ -105,10 +105,10 @@ app.directive("barChart", function () {
                         .attr("dy", ".71em")
                         .style("text-anchor", "end");
 
-
+                    svg.call(tip);
                     var firstX = d3.transform(svg.select(".axis .tick").attr("transform")).translate[0];
-                    var tip=d3.select(".cChart").append("div")
-                        .attr("class","tip");
+                    //var tip=d3.select(".cChart").append("div")
+                    //    .attr("class","tip");
 
                     svg.selectAll("rect")
                         .data(dataset)
@@ -132,11 +132,12 @@ app.directive("barChart", function () {
                                 .attr("y", h - (d.y * h / maxheight) - d3.select(this).attr("height") * 0.05)
                                 .attr("height", (d.y * h / maxheight) + d3.select(this).attr("height") * 0.05)
                                 .style("opacity", 1);
-                                tip.html(d.y)
-                                    .style("left",firstX + x(d.x)+l/2)
-                                    .style("top",h - (d.y * h / maxheight) - d3.select(this).attr("height") * 0.05-5);
+                                //tip.html(d.y)
+                                //    .style("left",firstX + x(d.x)+l/2)
+                                //    .style("top",h - (d.y * h / maxheight) - d3.select(this).attr("height") * 0.05-5);
 
                          //   console.log($(".tip").attr("y"));
+                            tip.show(d.y);
                             //svg.select(".tip")
                             //    .transition()
                             //    .attr("translate","transform(0,-20)");
@@ -149,7 +150,7 @@ app.directive("barChart", function () {
                                 .attr("y", h - (d.y * h / maxheight))
                                 .attr("height", d.y * h / maxheight)
                                 .style("opacity", 0.6);
-                         //   tip.hide(d.y);
+                            tip.hide(d.y);
                         });
                 }
                 var pieChart = function () {
