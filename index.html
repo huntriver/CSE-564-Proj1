@@ -17,12 +17,12 @@
         }
         .dropdown {
 
-            margin: 50px 15px 10px 30px;
+            margin: 50px 15px 10px 10px;
 
         }
 
         .slider {
-            margin: 50px 15px 50px 10px;
+            margin: 50px 15px 10px 10px;
 
 
         }
@@ -35,7 +35,6 @@
         }
 
         #barchart rect {
-            fill: red;
             opacity: 0.6
         }
 
@@ -69,17 +68,12 @@
             stroke-width: 2;
             opacity:0.6;
         }
-        .forcechart {
-            margin-left: 50px;
-            margin-top: 50px;
-        }
-
-        .forcechart .node {
+        #forcechart .node {
             stroke: #fff;
             stroke-width: 1.5px;
         }
 
-        .forcechart .link {
+        #forcechart .link {
             stroke: #999;
             stroke-opacity: .6;
         }
@@ -128,11 +122,6 @@
     <div class="charts">
 
         <div class="col-md-3">
-            <div class="well-lg slider">
-                <h4>Bin Size:</h4>
-                <input type="range" min="2" max="20" ng-model="binSize" ng-init="binSize=10"><span class="badge">{{binSize}}</span>
-            </div>
-
             <div class="well-lg dropdown" ng-init="selectedVar=vars[0]">
                 <h4>Select Variable</h4>
                 <button class="btn btn-primary btn-lg dropdown-toggle" type="button" data-toggle="dropdown">{{selectedVar}}
@@ -141,6 +130,11 @@
                     <li ng-repeat="var in vars"><a href="#" ng-click="$parent.selectedVar=var">{{var}}</a></li>
                 </ul>
             </div>
+            <div class="well-lg slider">
+                <h4>Bin Size:<span class="badge">{{binSize}}</span></h4>
+                <input type="range" min="2" max="20" ng-model="binSize" ng-init="binSize=10">
+            </div>
+
             <!--<select ng-options="var for var in vars" ng-model="selectedVar" ng-init="selectedVar=vars[1]"></select>-->
 
         </div>
