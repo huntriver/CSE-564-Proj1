@@ -7,9 +7,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="d3/d3.v3.js"></script>
-
-    <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
     <style>
         svg{
             /*text-align:center;*/
@@ -34,7 +32,7 @@
 
         }
 
-        #barchart rect {
+        #barchart .bar {
             opacity: 0.6
         }
 
@@ -50,12 +48,6 @@
             shape-rendering: crispEdges;
         }
 
-
-        #piechart .pie text {
-            font: 10px sans-serif;
-            text-anchor: middle;
-            font-weight: bold;
-        }
 
         #piechart .pie path {
             stroke: #fff;
@@ -92,13 +84,24 @@
             /*width: 80px;                                                    !* NEW *!*/
             /*z-index: 10;*/
         /*}*/
-                 .tip {
-                             background: rgba(0,0,0,0.8);
-                            color: #fff;
-                            border-radius: 4px;
-                             z-index:10000;
-                            padding: 12px;
+                 .tipbg {
+                             fill: rgba(0,0,0,0.8);
+                           rx: 15;
+                            ry:15;
+                     opacity:0
                         }
+                .tip{
+                    fill:#fff;
+                    opacity:0
+                }
+        /*.tip {*/
+            /*background: rgba(0,0,0,0.8);*/
+            /*color: #fff;*/
+            /*border-radius: 4px;*/
+            /*z-index:10000;*/
+            /*padding: 12px;*/
+        /*}*/
+
 
     </style>
 </head>

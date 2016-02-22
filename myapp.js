@@ -10,9 +10,10 @@ app.controller('barchartCtrl', function ($scope, $templateCache) {
         width: "100%",
         height: 800,
         padding: 0.5,
-        margin: {top: 30, right: 40, bottom: 30, left: 30},
+        margin: {top: 70, right: 40, bottom: 30, left: 30},
         legendSpacing: 5,
         legendRectSize: 20,
+        tipHeight: 40
     }
 
 })
@@ -49,12 +50,12 @@ app.directive("barChart", function ($timeout) {
                     });
                     xdomain.push(dataset[dataset.length - 1].x + dataset[0].dx);
                     //
-                    var tip = d3.tip()
-                        .attr('class', 'tip')
-                        .offset([-5, 0])
-                        .html(function (d) {
-                            return d;
-                        });
+                    //var tip = d3.tip()
+                    //    .attr('class', 'tip')
+                    //    .offset([-5, 0])
+                    //    .html(function (d) {
+                    //        return d;
+                    //    });
 
 
                     var x = d3.scale.ordinal()
@@ -101,12 +102,13 @@ app.directive("barChart", function ($timeout) {
                         .attr("dy", ".71em")
                         .style("text-anchor", "end");
 
-                    svg.call(tip);
+                    //   svg.call(tip);
                     var firstX = d3.transform(svg.select(".axis .tick").attr("transform")).translate[0];
                     svg.selectAll("rect")
                         .data(dataset)
                         .enter()
                         .append("rect")
+                        .attr("class", "bar")
                         .attr("x", function (d, i) {
                             return firstX + x(d.x) + (1 - config.padding) / 2 * l;
                         })
@@ -130,15 +132,32 @@ app.directive("barChart", function ($timeout) {
                                 .style("opacity", 1);
 
                             var tmp = d3.select(this).attr("height") * 0.05;
-                            tip.show(d.y);
-
-                            d3.select(".tip")
+                            // tip.show(d.y);
+                            // console.log((d3.selectAll(".tipbg")).filter(function(d,i1){return i==i1}));
+                            var b = (d3.selectAll(".tipbg").filter(function (d, i1) {
+                                return i == i1
+                            }))
+                            var t = (d3.selectAll(".tip").filter(function (d, i1) {
+                                return i == i1
+                            }))
+                            t
                                 .transition()
-                                .style("top", function () {
-                                    var x = d3.select(this).style("top");
-                                    var a = parseFloat(x.substring(0, x.indexOf("px"))) - tmp;
-                                    return a + "px";
+                                .style("opacity", 1)
+                                .attr("y", function () {
+                                    return d3.select(this).attr("y") - tmp;
                                 });
+
+                            b
+                                .transition()
+                                .style("opacity", 1)
+                                .attr("y", function () {
+                                    return d3.select(this).attr("y") - tmp;
+                                });
+                            //.style("top", function () {
+                            //    var x = d3.select(this).style("top");
+                            //    var a = parseFloat(x.substring(0, x.indexOf("px"))) - tmp;
+                            //    return a + "px";
+                            //});
 
                         })
                         .on('mouseout', function (d, i) {
@@ -148,15 +167,66 @@ app.directive("barChart", function ($timeout) {
                                 .attr("y", h - (d.y * h / maxheight))
                                 .attr("height", d.y * h / maxheight)
                                 .style("opacity", 0.6);
-                            var tmp = d3.select(this).attr("height") * 0.05;
-                            d3.select(".tip")
-                                .style("top", function () {
-                                    var x = d3.select(this).style("top");
-                                    var a = parseFloat(x.substring(0, x.indexOf("px"))) + tmp;
-                                    return a + "px";
+                            //   var tmp = d3.select(this).attr("height") * 0.05;
+                            //d3.select(".tip")
+                            //    .style("top", function () {
+                            //        var x = d3.select(this).style("top");
+                            //        var a = parseFloat(x.substring(0, x.indexOf("px"))) + tmp;
+                            //        return a + "px";
+                            //    });
+                            var b = (d3.selectAll(".tipbg").filter(function (d, i1) {
+                                return i == i1
+                            }))
+                            var t = (d3.selectAll(".tip").filter(function (d, i1) {
+                                return i == i1
+                            }))
+                            t
+                                .transition()
+                                .style("opacity", 0)
+                                .attr("y", function (d1) {
+                                    console.log(h - (d1.y * h / maxheight) - 5 - config.tipHeight / 2);
+                                    return h - (d1.y * h / maxheight) - config.tipHeight / 2;
                                 });
-                            tip.hide(d.y);
+
+                            b
+                                .transition()
+                                .style("opacity", 0)
+                                .attr("y", function (d1) {
+                                    console.log(h - (d1.y * h / maxheight) - 5 - config.tipHeight)
+                                    return h - (d1.y * h / maxheight) - 5 - config.tipHeight;
+                                });
+                            //  tip.hide(d.y);
                         });
+
+                    svg.selectAll(".tipbg")
+                        .data(dataset)
+                        .enter()
+                        .append("rect")
+                        .attr("class", "tipbg")
+                        .attr("width", l * config.padding)
+                        .attr("height", config.tipHeight)
+                        .attr("x", function (d, i) {
+                            return firstX + x(d.x) + (1 - config.padding) / 2 * l;
+                        })
+                        .attr("y", function (d) {
+                            return h - (d.y * h / maxheight) - 5 - config.tipHeight;
+                        })
+                    svg.selectAll(".tips")
+                        .data(dataset)
+                        .enter()
+                        .append("text")
+                        .attr("class", "tip")
+                        .text(function (d) {
+                            return d.y;
+                        })
+                        .attr("text-anchor", "middle")
+                        .attr("x", function (d, i) {
+                            return firstX + x(d.x) + l / 2;
+                        })
+                        .attr("y", function (d) {
+                            console.log(d.y);
+                            return h - (d.y * h / maxheight) - config.tipHeight / 2;
+                        })
                 }
                 var pieChart = function () {
                     var radius = (w > h ? h : w) / 2 - 20;
@@ -178,12 +248,12 @@ app.directive("barChart", function ($timeout) {
                     var labelArc = d3.svg.arc()
                         .outerRadius(radius - 60)
                         .innerRadius(radius - 60);
-                    var tip = d3.tip()
-                        .attr('class', 'tip')
-                        .direction('n')
-                        .html(function (d) {
-                            return "<strong>" + d3.format(".1f")(d.data.x) + "~" + d3.format(".1f")(d.data.x + d.data.dx) + ": </strong><span>" + d.data.y + "</span><br>";
-                        });
+                    //var tip = d3.tip()
+                    //    .attr('class', 'tip')
+                    //    .direction('n')
+                    //    .html(function (d) {
+                    //        return "<strong>" + d3.format(".1f")(d.data.x) + "~" + d3.format(".1f")(d.data.x + d.data.dx) + ": </strong><span>" + d.data.y + "</span><br>";
+                    //    });
 
 
                     var svg = d3.select(".cChart")
@@ -195,7 +265,7 @@ app.directive("barChart", function ($timeout) {
                         .append('g')
                         .attr('transform', 'translate(' + (w / 2) + ',' + (h / 2) + ')');
 
-                    svg.call(tip);
+                    //svg.call(tip);
 
                     var g = svg.selectAll("path.pie")
                         .data(pie(piedata))
@@ -218,17 +288,71 @@ app.directive("barChart", function ($timeout) {
                             })
                             leg.select("rect").transition().style("opacity", 1);
                             leg.select("text").transition().style("font-size", 15).style("font-weight", "bold");
-                            tip.show(d);
-                        }).on('mouseout', function (d, i) {
-                        d3.select(this).transition().attr("d", arc).style("opacity", 0.6);
-                        var leg = d3.selectAll(".legend").filter(function (d1) {
 
-                            return d1.color == i;
+                            var b = (d3.selectAll(".tipbg").filter(function (d, i1) {
+                                return i == i1
+                            }))
+                            var t = (d3.selectAll(".tip").filter(function (d, i1) {
+                                return i == i1
+                            }))
+                            t.transition()
+                                .style("opacity", 1);
+
+                            b.transition()
+                                .style("opacity", 1);
+                            //
+                            //$(this).parent().find(".tipbg").css("opacity","1");
+                            //$(this).parent().find(".tip").css("opacity","1");
+                            //  tip.show(d);
                         })
-                        leg.select("rect").transition().style("opacity", 0.6);
-                        leg.select("text").transition().style("font-size", 12).style("font-weight", "bold");
-                        tip.hide(d);
-                    });
+                        .on('mouseout', function (d, i) {
+                            d3.select(this).transition().attr("d", arc).style("opacity", 0.6);
+                            var leg = d3.selectAll(".legend").filter(function (d1) {
+
+                                return d1.color == i;
+                            })
+                            leg.select("rect").transition().style("opacity", 0.6);
+                            leg.select("text").transition().style("font-size", 12).style("font-weight", "bold");
+                            var b = (d3.selectAll(".tipbg").filter(function (d, i1) {
+                                return i == i1
+                            }))
+                            var t = (d3.selectAll(".tip").filter(function (d, i1) {
+                                return i == i1
+                            }))
+                            t.transition()
+                                .style("opacity", 0);
+
+
+                            b.transition()
+                                .style("opacity", 0);
+
+                            // tip.hide(d);
+                        });
+
+
+                    svg.selectAll(".tipbg")
+                        .data(pie(piedata))
+                        .enter().append("rect")
+                        .attr("class", "tipbg")
+                        .attr("height", config.tipHeight)
+                        .attr("transform", function (d) {
+                            return "translate(" + arc.centroid(d) + ")  translate(-10," + (-config.tipHeight / 2) + ")";
+                        })
+                    svg.selectAll(".tip")
+                        .data(pie(piedata))
+                        .enter().append("text")
+                        .attr("class", "tip")
+                        .attr("transform", function (d) {
+                            return "translate(" + arc.centroid(d) + ") translate(-5,0)";
+                        })
+                        .text(function (d) {
+                            return +d3.format(".1f")(d.data.x) + "~" + d3.format(".1f")(d.data.x + d.data.dx) + ": " + d.data.y;
+                        })
+                    var maxtext = d3.max($('.tip').map(function () {
+
+                        return ($(this).width()) + 10;
+                    }));
+                    svg.selectAll(".tipbg").attr("width", maxtext);
 
 
                     var legendRectSize = config.legendRectSize;
@@ -287,8 +411,11 @@ app.directive("barChart", function ($timeout) {
 
                         }));
                     });
+                 //   console.log(data);
                     data.forEach(function (d, i) {
                         var k, j;
+                        if( d.length==0) return;
+
                         for (j = 0; j < d.length; j++)
                             for (k = j + 1; k < d.length; k++) {
                                 linksdata.push({
@@ -300,6 +427,7 @@ app.directive("barChart", function ($timeout) {
                             }
 
                         for (j = i + 1; j < data.length; j++) {
+                            if (data[j].length==0) continue;
                             linksdata.push({
                                 "source": data[i][0].id,
                                 "target": data[j][0].id,
@@ -314,12 +442,12 @@ app.directive("barChart", function ($timeout) {
                             return link.distance + 30;
                         })
                         .size([w, h]);
-                    var tip = d3.tip()
-                        .attr('class', 'tip')
-                        .offset([-5, 0])
-                        .html(function (d) {
-                            return d;
-                        });
+                    //var tip = d3.tip()
+                    //    .attr('class', 'tip')
+                    //    .offset([-5, 0])
+                    //    .html(function (d) {
+                    //        return d;
+                    //    });
 
                     var svg = d3.select(".cChart").append("svg")
                         .attr("id", "forcechart")
@@ -327,7 +455,7 @@ app.directive("barChart", function ($timeout) {
                         .attr("height", h)
                         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-                    svg.call(tip);
+                    //svg.call(tip);
                     force
                         .nodes(nodesdata)
                         .links(linksdata)
@@ -350,11 +478,11 @@ app.directive("barChart", function ($timeout) {
                         .on('mouseover', function (d, i) {
 
 
-                            tip.show(d.value);
+                         //   tip.show(d.value);
                         }).on('mouseout', function (d, i) {
 
 
-                            tip.hide(d.value);
+                            //tip.hide(d.value);
                         })
                         .style("fill", function (d) {
                             return color(d.group);
@@ -388,6 +516,31 @@ app.directive("barChart", function ($timeout) {
                             });
 
                     });
+
+                    //svg.selectAll(".tipbg")
+                    //    .data(nodesdata)
+                    //    .enter().append("rect")
+                    //    .attr("class", "tipbg")
+                    //    .attr("height", config.tipHeight)
+                    //    .attr("transform", function (d) {
+                    //        return "translate(" + arc.centroid(d) + ")  translate(-10," + (-config.tipHeight / 2) + ")";
+                    //    })
+                    //svg.selectAll(".tip")
+                    //    .data(nodesdata)
+                    //    .enter().append("text")
+                    //    .attr("class", "tip")
+                    //    .attr("transform", function (d) {
+                    //        return "translate(" + arc.centroid(d) + ") translate(-5,0)";
+                    //    })
+                    //    .text(function (d) {
+                    //        return +d3.format(".1f")(d.data.x) + "~" + d3.format(".1f")(d.data.x + d.data.dx) + ": " + d.data.y;
+                    //    })
+                    //var maxtext = d3.max($('.tip').map(function () {
+                    //
+                    //    return ($(this).width()) + 10;
+                    //}));
+                    //svg.selectAll(".tipbg").attr("width", maxtext);
+
 
                 };
 
