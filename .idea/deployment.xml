@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="sparky.ic.sunysb.edu">
+  <component name="PublishConfigData" autoUpload="Always" serverName="564">
     <serverData>
-      <paths name="sparky.ic.sunysb.edu">
+      <paths name="564">
         <serverdata>
           <mappings>
-            <mapping deploy="/export/home2/x/i/xinhhuan/www" local="$PROJECT_DIR$" web="" />
+            <mapping deploy="/" local="$PROJECT_DIR$" web="/xinhhuang" />
           </mappings>
         </serverdata>
       </paths>

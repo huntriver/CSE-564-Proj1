@@ -5,12 +5,12 @@ var app = angular.module('myApp', []);
 
 app.controller('barchartCtrl', function ($scope, $templateCache) {
     //$scope.vars = ["Admit", "Gender","Dept","Freq"];
-    $scope.vars = ["AirPassengers", "time"];
+    $scope.vars = ["height", "weight","avg","HR"];
     $scope.config = {
         width: "100%",
         height: 800,
         padding: 0.5,
-        margin: {top: 70, right: 40, bottom: 30, left: 30},
+        margin: {top: 70, right: 40, bottom: 30, left: 40},
         legendSpacing: 5,
         legendRectSize: 20,
         tipHeight: 40
@@ -27,10 +27,22 @@ app.directive("barChart", function ($timeout) {
         var w = (config.width == "100%" ? $('.cChart').width() : config.width) - margin.left - margin.right;
         var h = config.height - margin.top - margin.bottom;
         var color = d3.scale.category20b();
+        function getRandomSubarray(arr, size) {
+            var shuffled = arr.slice(0), i = arr.length, min = i - size, temp, index;
+            while (i-- > min) {
+                index = Math.floor((i + 1) * Math.random());
+                temp = shuffled[index];
+                shuffled[index] = shuffled[i];
+                shuffled[i] = temp;
+            }
+            return shuffled.slice(min);
+        }
+
         d3.csv(scope.data, function (data) {
 
             var updateChart = function () {
                 var values = [];
+                console.log(data);
                 data.forEach(function (d) {
                     values.push(+d[scope.var]);
                 });
@@ -72,7 +84,7 @@ app.directive("barChart", function ($timeout) {
                         .tickFormat(d3.format(".1f"));
                     var yAxis = d3.svg.axis()
                         .scale(y)
-                        .orient("left").ticks(maxheight);
+                        .orient("left");
 
 
                     var l = x(dataset[1].x) - x(dataset[0].x); //width between two ticks

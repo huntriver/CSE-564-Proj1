@@ -2,8 +2,8 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="00cb79cb-4068-4bda-93c5-b0aa411da31f" name="sparky.ic.sunysb.edu" url="http://www.ic.sunysb.edu/Stu/xinhhuang/">
-        <fileTransfer host="sparky.ic.sunysb.edu" port="21" password="dfc2dfd2dfc2df92df9fdf98df9cdf9cdf98df98" username="xinhhuang">
+      <webServer id="6983bc63-0160-442c-924c-8a7e87837f1b" name="564" url="http://allv28.all.cs.stonybrook.edu">
+        <fileTransfer host="allv28.all.cs.stonybrook.edu" port="130" rootFolder="/var/www/html/xinhhuang" accessType="SFTP" password="dfc2dfd2dfc2df92df9fdf98df9cdf9cdf98df98" username="xinhhuang">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" />
           </advancedOptions>
